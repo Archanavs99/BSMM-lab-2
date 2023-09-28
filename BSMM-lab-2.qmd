@@ -92,17 +92,82 @@ DataExplorer::plot_missing(the_tate_artists)
 
 How number of works with missing dates is \_\_.
 
+```{r number of works with missing dates}
+
+
+Total_missing_date <- sum(is.na(the_tate$year))
+cat("How many number of works with missing dates is", Total_missing_date,".\n")
+```
+
 The number of artists whose works have missing dates is \_\_.
 
-It would require resolving missing year data for only \_\_ artists resolve resolve at least 50% of the missing data.
+```{r number of artists whose works have missing dates}
 
-The missing year data likely to be classified as \_\_\_\_.
+missing_dates_artists <- the_tate |> dplyr::filter(is.na(year)) |>
+                         dplyr::distinct(artist) |>
+                         nrow()
+ 
+cat("The number of artists whose works have missing dates is",missing_dates_artists, ".\n")        
+```
+
+```{r count of works missing data against each artist arranged in desc order}
+
+
+Artists_missing_dates <- the_tate |> dplyr::filter(is.na(year)) |>
+                         group_by(artist) |>
+                         summarise( Missing_dates = n())|>
+                         arrange(desc(Missing_dates)) |>
+                         as_tibble()
+Artists_missing_dates
+```
+
+```{r Include percentage of missing dates per artists}
+
+Artists_missing_dates <- Artists_missing_dates |> 
+                         mutate(percentage_missing_dates = (Missing_dates/Total_missing_date)*100)
+
+Artists_missing_dates
+```
+
+```{r To find the cumulative percentage against each artists}
+
+Artists_missing_dates <- Artists_missing_dates |> 
+                         mutate(cumulative_percentage = cumsum(percentage_missing_dates))
+
+Artists_missing_dates
+```
+
+```{r smallest number of arists needed to resolve at least 50% of the missing year data}
+
+artist_to_resolve_50_percent <- min(which(Artists_missing_dates$cumulative_percentage >= 50))
+
+cat("It would require resolving missing year data for only", artist_to_resolve_50_percent, "artists to resolve at least 50% of the missing data.\n")
+
+cat("\nThe missing year data likely to be classified as MAR")
+
+```
 
 ### Exercise 3
 
-The artist with the most works in the Tate collection is \_\_\_.
+```{r artist with most works in the tate collection}
 
-The artist with the tenth-most works in the Tate collection is \_\_\_.
+artist_max_work <- the_tate |> group_by(artist) |>
+                   summarise(no_of_works = n()) |>
+                   arrange(desc(no_of_works))
+artist_max_work
+
+#artist_max_work |> select (artist) |> slice_head(n=1) 
+```
+
+```{r top 10 artists with most of the works}
+
+top_ten_artists <- artist_max_work |> slice_head(n=10) 
+top_ten_artists
+```
+
+The artist with the most works in the Tate collection is **Turner, Joseph Mallord William**.
+
+The artist with the tenth-most works in the Tate collection is Warhol, Andy.
 
 ### Exercise 4
 
