@@ -39,7 +39,7 @@ the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
 
 ### Exercise 1
 
-The `the_tate` dataset has \_\_\_ unique artists who worked from \_\_\_ to \_\_\_. The works were acquired between the years \_\_\_ and \_\_\_.
+The `the_tate` dataset has 3336 unique artists who worked from 1545 to 2012. The works were acquired between the years 1823 and 2013.
 
 ```{r Data Analysis}
 
@@ -79,7 +79,7 @@ max_year <- max(the_tate$year, na.rm = TRUE)
 min_acquisition_year <- min(the_tate$acquisitionYear, na.rm = TRUE)
 max_acquisition_year <- max(the_tate$acquisitionYear, na.rm = TRUE)
 
-cat("The the_tate dataset has", unique_artists_count, "unique artists who worked from",
+cat("The the_tate dataset has", unique_artist_count, "unique artists who worked from",
     min_year, "to", max_year, ".\n The works were acquired between the years", min_acquisition_year, "and", max_acquisition_year, ".\n")
 
 
@@ -91,8 +91,6 @@ DataExplorer::plot_missing(the_tate_artists)
 ```
 
 ### Exercise 2
-
-How number of works with missing dates is \_\_.
 
 ```{r number of works with missing dates}
 
@@ -295,9 +293,15 @@ The corresponding price volatility was 34.70%.
 
 ### Exercise 9
 
-The period volatility was \_\_\_.\_%
+```{r calculate period volatility based on sd fucntion}
 
-```{r To find period volatility}
+volatility <- sd(summary_data$annual_return)
+print(volatility)
+```
+
+The period volatility was 19.51%
+
+```{r To find period volatility based on summary of annual stdcdev}
 
 # Install packages for reading the csv file
 
@@ -312,9 +316,10 @@ period_volatility <- sqrt(sum(summary_data$annual_stddev^2))
 # Create summary rows for period return and period volatility
 summary_rows <- tibble::tibble(
   Year = as.character("Period"),  # Ensure "Year" is character type
-  Annual_Return = period_return,
-  Annual_StdDev = period_volatility
+  annual_return = period_return,
+  annual_stddev = period_volatility
 )
+summary_rows
 
 # Convert the "Year" column in summary_data to character
 summary_data <- summary_data |>
@@ -324,7 +329,7 @@ summary_data <- summary_data |>
 summary_data <- bind_rows(summary_data, summary_rows)
 
 # Print the summary data
-print(summary_data)
+print(summary_data) 
 ```
 
-### 
+The period volatility was 48.8%
