@@ -222,14 +222,12 @@ ordered_records <- selected_records |> arrange(area_cm2)
 ordered_records
 
 # To find the largest artwork in the collection
-
 largest_artwork <- ordered_records |> slice_tail(n=1)
 largest_artwork
 
 largest_work_artist <- largest_artwork |> select(artist)
 
 # To find the smallest artwork in the collection
-
 smallest_artwork <- ordered_records |> slice_head(n=1)
 smallest_artwork
 ```
@@ -240,13 +238,27 @@ The artist with the smallest work in the collection is Mesens, E.L.T. The smalle
 
 ### Exercise 7
 
-...
+```{r left join}
+
+view(the_tate_artists)
+
+# left join the tables, filter gender 'NA' and group by gender
+leftjoin_op <- the_tate |> left_join(the_tate_artists,by = c("artistId" = "id")) |>
+                           filter(!is.na(gender)) |> group_by(gender)
+
+leftjoin_op
+```
 
 ### Exercise 8
 
 The annual return in the SPX price in 2020 was \_\_\_%.
 
 The corresponding price volatility was \_\_\_%.
+
+```{r}
+
+
+```
 
 ### Exercise 9
 
