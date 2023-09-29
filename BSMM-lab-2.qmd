@@ -29,6 +29,7 @@ library(gtExtras)     # helper functions for beautiful tables
 library(DataExplorer) #
 library(tidyr)
 library(dplyr)
+library(readr)
 
 the_tate <- readr::read_delim("data/the-tate-collection.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
@@ -251,14 +252,34 @@ leftjoin_op
 
 ### Exercise 8
 
+```{r}
+
+SPX_History <- readr::read_csv("data/SPX_HistoricalData_1692322132002.csv")
+
+# To add Year to the existing dataset
+SPX_History <- SPX_History |> mutate(Year = lubridate::year(as.Date(Date,format = "%m/%d/%Y")))
+ 
+ # To add the column for daily return, ri
+ SPX_History <- SPX_History |> mutate(daily_return = log(`Close/Last`/lag(`Close/Last`)))
+ 
+ #To add variance column
+ SPX_History <- SPX_History |> mutate(variance = (daily_return)^2)
+ 
+ view(SPX_History)     
+ 
+ # To summarise the returns and variance annually
+ summary_data <- SPX_History |> group_by(Year) |>
+                summarise(annual_return= sum(daily_return),
+                          annual_variance = sum(variance),
+                          .groups = "drop" # Drop grouping after summary
+                          )
+                
+summary_data                       
+```
+
 The annual return in the SPX price in 2020 was \_\_\_%.
 
 The corresponding price volatility was \_\_\_%.
-
-```{r}
-
-
-```
 
 ### Exercise 9
 
