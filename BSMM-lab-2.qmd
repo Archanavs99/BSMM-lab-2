@@ -173,20 +173,32 @@ The artist with the tenth-most works in the Tate collection is Warhol, Andy.
 
 ### Exercise 4
 
-The artist with the greatest number of works in the Tate collection represent \_\_\_% of the total number of works
-
 ```{r percentage of the total collection that each artist represents}
 
 # Total number of works
-Total_no_of_works <- artist_max_work |> nrow(artist_max_work)
+Total_no_of_works <- nrow(the_tate)
 Total_no_of_works
+
 # Percentage of total collection per artist
+artist_max_work %<>%mutate(percentage=(no_of_works/Total_no_of_works)*100)
+artist_max_work
 
-artist_max_work |> mutate(percentage_of_works =(no_of_works)/(Total_no_of_works))
 
-view(artist_max_work)
+# using gt
+table_formatted <- artist_max_work %>%
+  gt() %>%
+  fmt_number(
+    columns = c(no_of_works, percentage), # Format both no_of_works and percentage columns
+    decimals = 2 # No decimal places for no_of_works, and decimals for percentage
+  ) %>%
+  tab_header(title = "Top Artists by Number of Works and Percentage of Collection")
+
+# Print the formatted table
+print(table_formatted)
 
 ```
+
+The artist with the greatest number of works in the Tate collection represent **56.92%** of the total number of works
 
 ### Exercise 5
 
@@ -260,7 +272,7 @@ SPX_History <- readr::read_csv("data/SPX_HistoricalData_1692322132002.csv")
 SPX_History <- SPX_History |> mutate(Year = lubridate::year(as.Date(Date,format = "%m/%d/%Y")))
  
  # To add the column for daily return, ri
- SPX_History <- SPX_History |> mutate(daily_return = log(`Close/Last`/lag(`Close/Last`)))
+ SPX_History <- SPX_History |> mutate(daily_return = log(lead(`Close/Last`)/`Close/Last`))
  
  #To add variance column
  SPX_History <- SPX_History |> mutate(variance = (daily_return)^2)
@@ -269,17 +281,17 @@ SPX_History <- SPX_History |> mutate(Year = lubridate::year(as.Date(Date,format 
  
  # To summarise the returns and variance annually
  summary_data <- SPX_History |> group_by(Year) |>
-                summarise(annual_return= sum(daily_return),
-                          annual_variance = sum(variance),
+                summarise(annual_return= (exp(sum(daily_return, na.rm = TRUE)) -1) *100,
+                          annual_stddev = sqrt(sum(variance, na.rm = TRUE)) * 100,
                           .groups = "drop" # Drop grouping after summary
                           )
                 
-summary_data                       
+summary_data 
 ```
 
-The annual return in the SPX price in 2020 was \_\_\_%.
+The annual return in the SPX price in 2020 was -13.98%.
 
-The corresponding price volatility was \_\_\_%.
+The corresponding price volatility was 34.70%.
 
 ### Exercise 9
 
