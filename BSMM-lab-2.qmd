@@ -27,6 +27,8 @@ library(tidymodels)   # for modeling
 library(gt)           # for making display tables
 library(gtExtras)     # helper functions for beautiful tables
 library(DataExplorer) #
+library(tidyr)
+library(dplyr)
 
 the_tate <- readr::read_delim("data/the-tate-collection.csv", ";", escape_double = FALSE, trim_ws = TRUE)
 the_tate_artists <- readr::read_csv("data/the-tate-artists.csv")
@@ -63,7 +65,6 @@ the_tate |> dplyr::group_by(artist) |>
          max_acquisition_year = max(acquisitionYear, na.rm = TRUE)
   )
 
-library(dplyr)
 # To find the number of unique artists
 
 unique_artist_count <- 
@@ -188,8 +189,6 @@ view(artist_max_work)
 
 ### Exercise 5
 
-There are .... duplicate artist-title pairs
-
 ```{r to find duplicate records}
 
 # select the columns for artist and title and count the number of rows
@@ -203,14 +202,41 @@ total_rows <- the_tate |> select(artist,title) |> nrow()
 
 # count the number of duplicated artist-title pair
  duplicate_count <- total_rows - distinct_rows
- cat ("There are", duplicate_count, "duplicate artist-title pairs .\n")
+ cat ("There are", duplicate_count, "duplicate artist-title pairs .\n") 
 ```
 
 ### Exercise 6
 
-The artist with the largest work in the tate collection is \_\_\_
+```{r }
 
-The artist with the smallest work in the collection is \_\_\_. The smallest work has area \_\_\_ $\text{cm}^2$
+# add a column with area in cm2
+table_area <- the_tate |> mutate(area_cm2 = (width * height)*0.01)
+  
+# select required fields and drop NA values
+selected_records <- table_area |> select (artist, title, area_cm2) |>
+                   drop_na()
+
+
+# Order the work by area
+ordered_records <- selected_records |> arrange(area_cm2)
+ordered_records
+
+# To find the largest artwork in the collection
+
+largest_artwork <- ordered_records |> slice_tail(n=1)
+largest_artwork
+
+largest_work_artist <- largest_artwork |> select(artist)
+
+# To find the smallest artwork in the collection
+
+smallest_artwork <- ordered_records |> slice_head(n=1)
+smallest_artwork
+```
+
+The artist with the largest work in the tate collection is Therrien, Robert.
+
+The artist with the smallest work in the collection is Mesens, E.L.T. The smallest work has area 2.37 $\text{cm}^2$
 
 ### Exercise 7
 
