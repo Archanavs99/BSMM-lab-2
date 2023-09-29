@@ -173,9 +173,38 @@ The artist with the tenth-most works in the Tate collection is Warhol, Andy.
 
 The artist with the greatest number of works in the Tate collection represent \_\_\_% of the total number of works
 
+```{r percentage of the total collection that each artist represents}
+
+# Total number of works
+Total_no_of_works <- artist_max_work |> nrow(artist_max_work)
+Total_no_of_works
+# Percentage of total collection per artist
+
+artist_max_work |> mutate(percentage_of_works =(no_of_works)/(Total_no_of_works))
+
+view(artist_max_work)
+
+```
+
 ### Exercise 5
 
-There are \_\_ duplicate artist-title pairs
+There are .... duplicate artist-title pairs
+
+```{r to find duplicate records}
+
+# select the columns for artist and title and count the number of rows
+
+total_rows <- the_tate |> select(artist,title) |> nrow()
+
+# Count the distinct artist-title pairs
+
+ distinct_artist_title <- the_tate |> select(artist,title) |> distinct()
+ distinct_rows <- nrow(distinct_artist_title)
+
+# count the number of duplicated artist-title pair
+ duplicate_count <- total_rows - distinct_rows
+ cat ("There are", duplicate_count, "duplicate artist-title pairs .\n")
+```
 
 ### Exercise 6
 
